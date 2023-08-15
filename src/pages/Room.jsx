@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { databases, DATABASE_ID, COLLECTION_MESSAGE_ID, PROJECT_ID } from '../appWriteConfig'
-import { ID } from 'appwrite'
+import { ID, Query } from 'appwrite'
+import { Trash2 } from 'react-feather'
 
 const Room = () => {
 	//
@@ -30,9 +31,12 @@ const Room = () => {
 		const response = await databases.listDocuments(DATABASE_ID, COLLECTION_MESSAGE_ID)
 		setMessage(response.documents)
 	}
+	const deleteMessage = async function (id) {
+		const response = await databases.deleteDocument(DATABASE_ID, COLLECTION_MESSAGE_ID, id)
+		setMessage(messages.filter(message => message.$id !== id))
+	}
 	//
 
-	// console.log('messages', message~s)
 	return (
 		<main className="container">
 			<div className="room--container">
@@ -54,6 +58,7 @@ const Room = () => {
 						<div key={message.$id} className="message--wrapper">
 							<div className="message--header">
 								<small className="message-timestamp">{message.$createdAt}</small>
+								<Trash2 className="delete--btn" onClick={() => deleteMessage(message.$id)} />
 							</div>
 							<div className="message--body">
 								<span>{message.body}</span>
