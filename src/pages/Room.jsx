@@ -31,6 +31,7 @@ const Room = () => {
 		setMessage(response.documents)
 	}
 	//
+
 	// console.log('messages', message~s)
 	return (
 		<main className="container">
