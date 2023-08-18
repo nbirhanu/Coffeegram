@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { databases, DATABASE_ID, COLLECTION_MESSAGE_ID, PROJECT_ID } from '../appWriteConfig'
 import { ID, Query } from 'appwrite'
 import { Trash2 } from 'react-feather'
+import client from '../appWriteConfig'
 
 const Room = () => {
 	//
@@ -9,6 +10,20 @@ const Room = () => {
 	const [messageBody, setMessageBody] = useState('')
 	useEffect(function () {
 		getMessage()
+		const unsubscribe = client.subscribe(
+			[`databases.${DATABASE_ID}.collections.${COLLECTION_MESSAGE_ID}.documents`],
+			response => {
+				if (response.events.includes('databases.*.collections.*.documents.*.create')) {
+					setMessage(prevState => [response.payload, ...prevState])
+				}
+				if (response.events.includes('databases.*.collections.*.documents.*.delete')) {
+					setMessage(prevState => prevState.filter(message => message.$id !== response.payload.$id))
+				}
+			}
+		)
+		return () => {
+			unsubscribe()
+		}
 	}, [])
 	//create document
 	const handleOnSubmit = async function (e) {
@@ -16,14 +31,14 @@ const Room = () => {
 		let payload = {
 			body: messageBody,
 		}
-		let respones = await databases.createDocument(
+		let response = await databases.createDocument(
 			DATABASE_ID,
 			COLLECTION_MESSAGE_ID,
 			ID.unique(),
 			payload
 		)
-		console.log(respones)
-		setMessage(prestate => [respones, ...messages])
+		// console.log(respones)
+		// setMessage(prestate => [respones, ...messages])
 		setMessageBody('')
 	}
 	// create database
@@ -33,9 +48,8 @@ const Room = () => {
 	}
 	const deleteMessage = async function (id) {
 		const response = await databases.deleteDocument(DATABASE_ID, COLLECTION_MESSAGE_ID, id)
-		setMessage(messages.filter(message => message.$id !== id))
+		// setMessage(messages.filter(message => message.$id !== id))
 	}
-	//
 
 	return (
 		<main className="container">
