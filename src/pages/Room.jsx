@@ -3,6 +3,7 @@ import { databases, DATABASE_ID, COLLECTION_MESSAGE_ID, PROJECT_ID } from '../ap
 import { ID, Query } from 'appwrite'
 import { Trash2 } from 'react-feather'
 import client from '../appWriteConfig'
+import Header from '../components/Header'
 
 const Room = () => {
 	//
@@ -53,6 +54,7 @@ const Room = () => {
 
 	return (
 		<main className="container">
+			<Header />
 			<div className="room--container">
 				<form id="message--form" onSubmit={handleOnSubmit}>
 					<div>

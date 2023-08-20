@@ -7,8 +7,18 @@ export const AuthProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true)
 	const [user, setUser] = useState(null)
 	useEffect(function () {
-		setLoading(false)
+		// setLoading(false)
+		handleUserOnSubmit()
 	}, [])
+	const handleUserOnSubmit = async function () {
+		try {
+			const userDetails = await account.get()
+			setUser(userDetails)
+			setLoading(false)
+		} catch (error) {
+			console.error(error)
+		}
+	}
 	const handleSubmit = async function (e, credentials) {
 		e.preventDefault()
 		try {
@@ -21,9 +31,14 @@ export const AuthProvider = ({ children }) => {
 			console.error(error)
 		}
 	}
+	const handleUserLogout = async function () {
+		await account.deleteSession('current')
+		setUser(null)
+	}
 	const contextData = {
 		user,
 		handleSubmit,
+		handleUserLogout,
 	}
 
 	return (
